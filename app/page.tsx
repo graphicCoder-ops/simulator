@@ -25,14 +25,23 @@ const fieldsToDisplay: { key: keyof SensorData; label: string }[] = [
 
 export default function HomePage() {
   const [sensorData, setSensorData] = useState<SensorData | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function getData() {
-      const data = await fetchSensorData('tirth');
-      setSensorData(data);
+      const data = await fetchSensorData();
+      if (data) {
+        setSensorData(data);
+      } else {
+        setError('Failed to load sensor data.');
+      }
     }
     getData();
   }, []);
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   if (!sensorData) {
     return <div>Loading...</div>;
@@ -48,7 +57,7 @@ export default function HomePage() {
               <CardTitle>{label}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>{sensorData[key]}</p>
+              <p>{sensorData[key] !== undefined ? sensorData[key] : 'N/A'}</p>
             </CardContent>
           </Card>
         ))}
