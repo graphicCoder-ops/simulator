@@ -118,9 +118,9 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                 <p>
-  {sensorData[key] !== undefined 
-    ? parseFloat(sensorData[key]).toFixed(2)
-    : 'N/A'}
+                {sensorData[key] !== undefined
+  ? parseFloat(sensorData[key] as any).toFixed(2)
+  : 'N/A'}
 </p>
                 </CardContent>
               </Card>
