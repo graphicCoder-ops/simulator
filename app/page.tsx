@@ -10,7 +10,7 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { fetchDTCData, fetchSensorData, SensorData } from '@/lib/api';
-import { FaCar, FaMapMarkerAlt, FaCog } from 'react-icons/fa';
+import { FaCar, FaMapMarkerAlt } from 'react-icons/fa';
 import { GiTreasureMap } from "react-icons/gi"; // Import icons
 import { AlertCircle, CheckCircle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -54,18 +54,18 @@ export default function HomePage() {
     }
     }
 
-    async function getDTCData() {
+  //   async function getDTCData() {
 
       
       
-      const data = await fetchDTCData();
-      if (data) {
-        //setDtcs(data.DTCs);
-      } else {
-        setError('Failed to load sensor data.');
+  //     const data = await fetchDTCData();
+  //     if (data) {
+  //       //setDtcs(data.DTCs);
+  //     } else {
+  //       setError('Failed to load sensor data.');
       
-  }
-  }
+  // }
+  // }
     //getDTCData();
     //setInterval(getData,500);
     getData();
@@ -78,6 +78,7 @@ export default function HomePage() {
       { code: 'P0173', description: 'System too lean (Bank 1)', severity: 'danger' },
     ];
     setDtcs(data);
+    setCurrentLocation({lat:43.65647222,lng:-79.73763889});
     
     // if (navigator.geolocation) {
     //   navigator.geolocation.getCurrentPosition(
