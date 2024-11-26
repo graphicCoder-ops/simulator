@@ -54,19 +54,19 @@ export default function HomePage() {
     }
     }
 
-  //   async function getDTCData() {
+ async function getDTCData() {
 
       
       
-  //     const data = await fetchDTCData();
-  //     if (data) {
-  //       //setDtcs(data.DTCs);
-  //     } else {
-  //       setError('Failed to load sensor data.');
+    const data = await fetchDTCData();
+   if (data) {
+     //setDtcs(data.DTCs);
+    } else {
+      setError('Failed to load sensor data.');
       
-  // }
-  // }
-    //getDTCData();
+}
+}
+ getDTCData();
     //setInterval(getData,500);
     getData();
 
@@ -118,6 +118,7 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                 <p>
+                  
                 {sensorData[key] !== undefined
   ? parseFloat(sensorData[key] as any).toFixed(2)
   : 'N/A'}
