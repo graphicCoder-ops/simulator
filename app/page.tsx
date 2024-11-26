@@ -9,8 +9,12 @@ import {
   CardTitle,
   CardContent,
 } from '@/components/ui/card';
-import { fetchSensorData, SensorData } from '@/lib/api';
-import { FaCar, FaMapMarkerAlt, FaCog } from 'react-icons/fa'; // Import icons
+import { fetchDTCData, fetchSensorData, SensorData } from '@/lib/api';
+import { FaCar, FaMapMarkerAlt, FaCog } from 'react-icons/fa';
+import { GiTreasureMap } from "react-icons/gi"; // Import icons
+import { AlertCircle, CheckCircle } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { TbEngine } from "react-icons/tb";
 
 const fieldsToDisplay: { key: keyof SensorData; label: string }[] = [
   { key: 'RPM', label: 'RPM' },
@@ -24,21 +28,72 @@ const fieldsToDisplay: { key: keyof SensorData; label: string }[] = [
   { key: 'FUEL_LEVEL', label: 'Fuel Level' },
 ];
 
+interface DTC {
+  code: string;
+  description: string;
+  severity: 'danger' | 'normal';
+}
+
 export default function HomePage() {
   const [sensorData, setSensorData] = useState<SensorData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTab, setSelectedTab] = useState<string>('obd');
+ const [dtcs, setDtcs] = useState<DTC[]>([]);
 
+  
+  const [selectedTab, setSelectedTab] = useState<string>('DTCs');
+  const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } >({lat:43.65647222,lng:-79.73763889});
   useEffect(() => {
     async function getData() {
-      const data = await fetchSensorData();
+      
+        const data = await fetchSensorData();
+        if (data) {
+          setSensorData(data);
+        } else {
+          setError('Failed to load sensor data.');
+        
+    }
+    }
+
+    async function getDTCData() {
+
+      
+      
+      const data = await fetchDTCData();
       if (data) {
-        setSensorData(data);
+        //setDtcs(data.DTCs);
       } else {
         setError('Failed to load sensor data.');
-      }
-    }
+      
+  }
+  }
+    //getDTCData();
+    //setInterval(getData,500);
     getData();
+
+    const data: DTC[] = [
+      { code: 'P0300', description: 'Engine misfire detected', severity: 'danger' },
+      { code: 'P0420', description: 'Catalyst system efficiency below threshold', severity: 'normal' },
+      { code: 'P0171', description: 'System too lean (Bank 1)', severity: 'danger' },
+      { code: 'P0172', description: 'System too lean (Bank 1)', severity: 'danger' },
+      { code: 'P0173', description: 'System too lean (Bank 1)', severity: 'danger' },
+    ];
+    setDtcs(data);
+    
+    // if (navigator.geolocation) {
+    //   navigator.geolocation.getCurrentPosition(
+    //     (position) => {
+    //       setCurrentLocation({
+    //         lat: position.coords.latitude,
+    //         lng: position.coords.longitude,
+    //       });
+    //     },
+    //     (error) => {
+    //       console.error('Error getting location:', error);
+    //     }
+    //   );
+    // } else {
+    //   console.error('Geolocation is not supported by this browser.');
+    // }
   }, []);
 
   const renderContent = () => {
@@ -54,14 +109,18 @@ export default function HomePage() {
       return (
         <div className="p-4">
           <h1 className="text-2xl font-bold mb-4">OBD Information</h1>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 md:grid-cols-3 gap-2">
             {fieldsToDisplay.map(({ key, label }) => (
-              <Card key={key}>
-                <CardHeader>
+              <Card key={key} className=''>
+                <CardHeader className='p-4'>
                   <CardTitle>{label}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p>{sensorData[key] !== undefined ? sensorData[key] : 'N/A'}</p>
+                <p>
+  {sensorData[key] !== undefined 
+    ? parseFloat(sensorData[key]).toFixed(2)
+    : 'N/A'}
+</p>
                 </CardContent>
               </Card>
             ))}
@@ -73,26 +132,84 @@ export default function HomePage() {
     if (selectedTab === 'maps') {
       return (
         <div className="p-4">
-          <h1 className="text-2xl font-bold mb-4">Google Maps</h1>
-          <iframe
-            title="Google Maps"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509364!2d144.95373531531692!3d-37.81627977975195!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad642af0f11fd81%3A0xf5777d5e68af6e74!2sFlinders%20St%20Station!5e0!3m2!1sen!2sau!4v1602219317463!5m2!1sen!2sau"
-            width="100%"
-            height="600"
-            style={{ border: 0 }}
-            allowFullScreen={true}
-            loading="lazy"
-          />
+        <h1 className="text-2xl font-bold mb-4">Google Maps</h1>
+        <iframe
+          title="Google Maps"
+          src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyA1hbmUTv5XBgn9k9-q0JG0L5kGMEl-bdE&q=${currentLocation.lat},${currentLocation.lng}`}
+          width="100%"
+          height="270"
+          style={{ border: 0 }}
+          allowFullScreen={true}
+          loading="lazy"
+        />
+        <div className="flex items-center mt-4">
+          <span className="text-2xl mr-2">
+            {/* React Icons */}
+            <i className="fas fa-car"></i>
+          </span>
+          <span className="text-2xl mx-2">➡️</span>
+          <span className="text-2xl mx-2">
+            <i className="fas fa-gas-pump"></i>
+          </span>
+          <span className="ml-4 text-lg font-semibold">
+            Estimated distance of <span className="text-blue-600">120 km</span>
+          </span>
         </div>
+      </div>
       );
     }
 
-    if (selectedTab === 'settings') {
+    if (selectedTab === 'trips') {
       return (
         <div className="p-4">
-          <h1 className="text-2xl font-bold mb-4">Settings</h1>
-          <p>Settings content goes here.</p>
+          <h1 className="text-2xl font-bold mb-4">Trips</h1>
+          <p>Trips goes here</p>
         </div>
+      );
+    }
+    if (selectedTab === 'DTCs') {
+      return (
+        <div className="flex-grow bg-gray-100">
+        <Card className="h-full">
+          <CardHeader>
+            <CardTitle className="text-xl">DTC Information</CardTitle>
+          </CardHeader>
+          <CardContent className="h-[320px]">
+            <ScrollArea className="h-full">
+              {dtcs.length > 0 ? (
+                <ul className="space-y-4">
+                  {dtcs.map((dtc) => (
+                    <li
+                      key={dtc.code}
+                      className={`p-4 rounded border ${
+                        dtc.severity === 'danger' ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span
+                          className={`text-lg font-bold ${
+                            dtc.severity === 'danger' ? 'text-red-500' : 'text-gray-800'
+                          }`}
+                        >
+                          {dtc.code}
+                        </span>
+                        {dtc.severity === 'danger' ? (
+                          <AlertCircle className="text-red-500" />
+                        ) : (
+                          <CheckCircle className="text-green-500" />
+                        )}
+                      </div>
+                      <p className="text-gray-600 text-sm mt-2">{dtc.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-center text-gray-500">No DTCs found.</p>
+              )}
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </div>
       );
     }
   };
@@ -105,6 +222,15 @@ export default function HomePage() {
           <h2 className="text-xl font-bold">Menu</h2>
         </div>
         <div className="flex-grow">
+        <button
+            className={`w-full p-4 text-left flex items-center gap-4 ${
+              selectedTab === 'DTCs' ? 'bg-gray-700' : ''
+            }`}
+            onClick={() => setSelectedTab('DTCs')}
+          >
+            <TbEngine className='text-xl' />
+            DTCs
+          </button>
           <button
             className={`w-full p-4 text-left flex items-center gap-4 ${
               selectedTab === 'obd' ? 'bg-gray-700' : ''
@@ -112,6 +238,7 @@ export default function HomePage() {
             onClick={() => setSelectedTab('obd')}
           >
             <FaCar className="text-xl" />
+            Info
           </button>
           <button
             className={`w-full p-4 text-left flex items-center gap-4 ${
@@ -120,14 +247,16 @@ export default function HomePage() {
             onClick={() => setSelectedTab('maps')}
           >
             <FaMapMarkerAlt className="text-xl" />
+            Maps
           </button>
           <button
             className={`w-full p-4 text-left flex items-center gap-4 ${
-              selectedTab === 'settings' ? 'bg-gray-700' : ''
+              selectedTab === 'trips' ? 'bg-gray-700' : ''
             }`}
-            onClick={() => setSelectedTab('settings')}
+            onClick={() => setSelectedTab('trips')}
           >
-            <FaCog className="text-xl" />
+            <GiTreasureMap className='text-xl' />
+            trips
           </button>
         </div>
       </div>

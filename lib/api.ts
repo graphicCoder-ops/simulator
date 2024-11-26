@@ -35,3 +35,31 @@ export async function fetchSensorData(): Promise<SensorData | null> {
     return null;
   }
 }
+
+export interface DTCdata {
+  DTCs?:Array<string>
+}
+
+export async function fetchDTCData(): Promise<DTCdata | null> {
+  try {
+    const response = await fetch('/api/dtc', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Disable caching for up-to-date data
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data: DTCdata = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch sensor data:', error);
+    return null;
+  }
+}
+
