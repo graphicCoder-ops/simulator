@@ -18,8 +18,11 @@ import {
 } from '@/lib/api';
 import { FaCar, FaMapMarkerAlt } from 'react-icons/fa';
 import { GiTreasureMap } from 'react-icons/gi';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle} from 'lucide-react';
 import { TbEngine } from 'react-icons/tb';
+
+import { LineChart, Line } from 'recharts';
+
 
 // Import Recharts components
 import {
@@ -63,8 +66,22 @@ export interface TripData {
   CO2Emissions: number;
 }
 
+const fieldRanges: Record<string, [number, number]> = {
+  RPM: [0, 8000],
+  SPEED: [0, 200],
+  ENGINE_LOAD: [0, 100],
+  LONG_FUEL_TRIM_1: [-50, 50],
+  O2_B1S1: [0, 1],
+  THROTTLE_POS: [0, 100],
+  COOLANT_TEMP: [0, 120],
+  MAF: [0, 300],
+  FUEL_LEVEL: [0, 100],
+};
+
 export default function HomePage() {
   const [sensorData, setSensorData] = useState<SensorData | null>(null);
+  const [sensorHistory, setSensorHistory] = useState<Record<string, Array<{ time: string; value: number }>>>({});
+  const [selectedField, setSelectedField] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dtcs, setDtcs] = useState<DTC[]>([]);
   const [selectedTab, setSelectedTab] = useState<string>('DTCs');
@@ -80,6 +97,18 @@ export default function HomePage() {
     async function getData() {
       const data = await fetchSensorData();
       if (data) {
+        setSensorHistory((prev) => {
+          const updatedHistory = { ...prev };
+          Object.keys(data).forEach((key) => {
+            const value = data[key];
+            if (!updatedHistory[key]) {
+              updatedHistory[key] = [];
+            }
+            const timestamp = new Date().toLocaleTimeString();
+            updatedHistory[key] = [...updatedHistory[key], { time: timestamp, value: value! }].slice(-10); // Keep the last 10 values
+          });
+          return updatedHistory;
+        });
         setSensorData(data);
       } else {
         setError('Failed to load sensor data.');
@@ -97,7 +126,7 @@ export default function HomePage() {
     }
 
     getDTCData();
-    getData();
+    setInterval(getData,1000);
 
     // Sample DTC data
     const dtcData: DTC[] = [
@@ -147,6 +176,14 @@ export default function HomePage() {
     getTripData();
   }, []);
 
+
+  const handleCardClick = (key: string) => {
+    setSelectedField(key);
+  };
+
+  const closeChart = () => {
+    setSelectedField(null);
+  };
   const renderContent = () => {
     if (selectedTab === 'obd') {
       if (error) {
@@ -159,24 +196,55 @@ export default function HomePage() {
 
       return (
         <div className="p-4">
-          <h1 className="text-2xl font-bold mb-4">OBD Information</h1>
-          <div className="grid grid-cols-3 md:grid-cols-3 gap-3">
-            {fieldsToDisplay.map(({ key, label }) => (
-              <Card key={key}>
-                <CardHeader>
-                  <CardTitle>{label}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p>
-                    {sensorData[key] !== undefined
-                      ? parseFloat(sensorData[key] as any).toFixed(2)
-                      : 'N/A'}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+      <h1 className="text-2xl font-bold mb-4">OBD Information</h1>
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-3">
+        {fieldsToDisplay.map(({ key, label }) => (
+          <Card key={key} onClick={() => handleCardClick(key)} className="cursor-pointer">
+            <CardHeader>
+              <CardTitle>{label}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>
+                {sensorData[key] !== undefined
+                  ? parseFloat(sensorData[key] as any).toFixed(2)
+                  : 'N/A'}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {selectedField && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-[600px]">
+            <button
+              onClick={closeChart}
+              className="absolute top-2 right-2 text-gray-500 text-black text-3xl"
+            >
+              ✖
+            </button>
+            <h2 className="text-xl font-bold mb-4">Real-Time Data for {selectedField}</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart
+                data={sensorHistory[selectedField]}
+                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="time"
+                  tickFormatter={(time) => time}
+                  label={{ value: 'Time', position: 'insideBottom', offset: -5 }}
+                />
+                <YAxis domain={fieldRanges[selectedField!] || [0, 100]} // Use the custom range or a default
+                  label={{ value: 'Value', angle: -90, position: 'insideLeft' }}/>
+                <Tooltip />
+                <Line type="linear" dataKey="value" stroke="#8884d8" strokeWidth={2}  />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
+      )}
+    </div>
       );
     }
 
