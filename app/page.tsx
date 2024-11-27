@@ -258,12 +258,12 @@ export default function HomePage() {
             {/* Most Recent Trip */}
             <Card key={mostRecentTrip._id} className="p-4">
               <CardHeader>
-                <CardTitle className="text-xl font-semibold">
+                <CardTitle className="text-2xl font-semibold">
                   Most Recent Trip on{' '}
                   {new Date(mostRecentTrip.Date).toLocaleDateString()}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className='text-2xl'>
                 <p>
                   Date: {new Date(mostRecentTrip.Date).toLocaleString()}
                 </p>
@@ -300,11 +300,11 @@ export default function HomePage() {
                 {otherTrips.map((trip) => (
                   <Card key={trip._id} className="p-4">
                     <CardHeader>
-                      <CardTitle className="text-xl font-semibold">
+                      <CardTitle className="text-2xl font-semibold">
                         Trip on {new Date(trip.Date).toLocaleDateString()}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className='text-2xl'>
                       <p>Date: {new Date(trip.Date).toLocaleString()}</p>
                       <p>Distance Travelled: {trip.DistanceTravelled} km</p>
                       <p>Fuel Consumption: {trip.FuelConsumption} liters</p>

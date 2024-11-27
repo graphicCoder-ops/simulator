@@ -65,6 +65,7 @@ export async function fetchDTCData(): Promise<DTCdata | null> {
 
 
 export interface TripsData {
+  _id:string,
   Date: string;
   DistanceTravelled: number;
   FuelConsumption: number;
