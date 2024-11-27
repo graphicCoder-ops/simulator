@@ -31,6 +31,9 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from 'recharts';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { BsFillFuelPumpFill } from "react-icons/bs";
+import { IoIosWarning } from "react-icons/io";
 
 const fieldsToDisplay: { key: keyof SensorData; label: string }[] = [
   { key: 'RPM', label: 'RPM' },
@@ -157,10 +160,10 @@ export default function HomePage() {
       return (
         <div className="p-4">
           <h1 className="text-2xl font-bold mb-4">OBD Information</h1>
-          <div className="grid grid-cols-3 md:grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 md:grid-cols-3 gap-3">
             {fieldsToDisplay.map(({ key, label }) => (
               <Card key={key}>
-                <CardHeader className="p-4">
+                <CardHeader>
                   <CardTitle>{label}</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -183,9 +186,9 @@ export default function HomePage() {
           <h1 className="text-2xl font-bold mb-4">Google Maps</h1>
           <iframe
             title="Google Maps"
-            src={`https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=${currentLocation.lat},${currentLocation.lng}`}
+            src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyA1hbmUTv5XBgn9k9-q0JG0L5kGMEl-bdE&q=${currentLocation.lat},${currentLocation.lng}`}
             width="100%"
-            height="270"
+            height="330"
             style={{ border: 0 }}
             allowFullScreen={true}
             loading="lazy"
@@ -195,10 +198,11 @@ export default function HomePage() {
               <FaCar />
             </span>
             <span className="text-2xl mx-2">➡️</span>
-            <span className="text-2xl mx-2">
-              <i className="fas fa-gas-pump"></i>
+            <span className="text-2xl mr-2">
+            <BsFillFuelPumpFill />
             </span>
-            <span className="ml-4 text-lg font-semibold">
+            
+            <span className="ml-4 text-3xl font-semibold">
               Estimated distance of <span className="text-blue-600">120 km</span>
             </span>
           </div>
@@ -317,45 +321,48 @@ export default function HomePage() {
 
     if (selectedTab === 'DTCs') {
       return (
-        <div className="p-4">
-          <h1 className="text-2xl font-bold mb-4">DTC Information</h1>
-          {dtcs.length > 0 ? (
-            <ul className="space-y-4">
-              {dtcs.map((dtc) => (
-                <li
-                  key={dtc.code}
-                  className={`p-4 rounded border ${
-                    dtc.severity === 'danger'
-                      ? 'border-red-500 bg-red-50'
-                      : 'border-gray-300 bg-white'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`text-lg font-bold ${
-                        dtc.severity === 'danger'
-                          ? 'text-red-500'
-                          : 'text-gray-800'
-                      }`}
-                    >
-                      {dtc.code}
-                    </span>
-                    {dtc.severity === 'danger' ? (
-                      <AlertCircle className="text-red-500" />
-                    ) : (
-                      <CheckCircle className="text-green-500" />
-                    )}
-                  </div>
-                  <p className="text-gray-600 text-sm mt-2">
-                    {dtc.description}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-center text-gray-500">No DTCs found.</p>
-          )}
-        </div>
+        <div className="p-4 h-full">
+  <h1 className="text-2xl font-bold mb-4">DTC Information</h1>
+
+  {dtcs.length > 0 ? (
+    <ScrollArea className="h-[390px] overflow-y-auto">
+      <ul className="space-y-4">
+        {dtcs.map((dtc) => (
+          <li
+            key={dtc.code}
+            className={`p-4 rounded border ${
+              dtc.severity === 'danger'
+                ? 'border-red-500 bg-red-50'
+                : 'border-gray-300 bg-white'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span
+                className={`text-lg font-bold ${
+                  dtc.severity === 'danger'
+                    ? 'text-red-500'
+                    : 'text-gray-800'
+                }`}
+              >
+                {dtc.code}
+              </span>
+              {dtc.severity === 'danger' ? (
+                <AlertCircle className="text-red-500" />
+              ) : (
+                <IoIosWarning className="text-yellow-500 text-3xl" />
+
+              )}
+            </div>
+            <p className="text-gray-600 text-sm mt-2">{dtc.description}</p>
+          </li>
+        ))}
+      </ul>
+    </ScrollArea>
+  ) : (
+    <p className="text-center text-gray-500">No DTCs found.</p>
+  )}
+</div>
+
       );
     }
   };
@@ -363,57 +370,57 @@ export default function HomePage() {
   return (
     <div
       className="relative"
-      style={{ width: '800px', height: '400px', margin: '0 auto', overflow: 'hidden' }}
+      style={{ width: '800px', height: '480px', margin: '0 auto', overflow: 'hidden' }}
     >
       {/* Sidebar */}
       <div
         className="bg-black text-white flex flex-col"
         style={{
           width: '150px',
-          height: '400px',
+          height: '480px',
           position: 'absolute',
           top: 0,
           left: 0,
         }}
       >
         <div className="p-4">
-          <h2 className="text-xl font-bold">Menu</h2>
+          <h2 className="text-2xl font-bold">Menu</h2>
         </div>
         <div className="flex-grow">
           <button
-            className={`w-full p-4 text-left flex items-center gap-4 ${
+            className={`w-full p-4 text-xl text-left flex items-center gap-4 ${
               selectedTab === 'DTCs' ? 'bg-gray-700' : ''
             }`}
             onClick={() => setSelectedTab('DTCs')}
           >
-            <TbEngine className="text-xl" />
+            <TbEngine className="text-3xl" />
             DTCs
           </button>
           <button
-            className={`w-full p-4 text-left flex items-center gap-4 ${
+            className={`w-full p-4 text-xl text-left flex items-center gap-4 ${
               selectedTab === 'obd' ? 'bg-gray-700' : ''
             }`}
             onClick={() => setSelectedTab('obd')}
           >
-            <FaCar className="text-xl" />
+            <FaCar className="text-2xl" />
             Info
           </button>
           <button
-            className={`w-full p-4 text-left flex items-center gap-4 ${
+            className={`w-full p-4 text-xl text-left flex items-center gap-4 ${
               selectedTab === 'maps' ? 'bg-gray-700' : ''
             }`}
             onClick={() => setSelectedTab('maps')}
           >
-            <FaMapMarkerAlt className="text-xl" />
+            <FaMapMarkerAlt className="text-2xl" />
             Maps
           </button>
           <button
-            className={`w-full p-4 text-left flex items-center gap-4 ${
+            className={`w-full p-4 text-xl text-left flex items-center gap-4 ${
               selectedTab === 'trips' ? 'bg-gray-700' : ''
             }`}
             onClick={() => setSelectedTab('trips')}
           >
-            <GiTreasureMap className="text-xl" />
+            <GiTreasureMap className="text-2xl" />
             Trips
           </button>
         </div>
@@ -423,7 +430,7 @@ export default function HomePage() {
         className="bg-gray-100"
         style={{
           marginLeft: '150px',
-          height: '400px',
+          height: '480px',
           overflowY: 'auto',
         }}
       >
