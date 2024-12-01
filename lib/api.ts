@@ -95,3 +95,33 @@ export async function fetchTripData(): Promise<TripsData[] | null> {
     return null;
   }
 }
+
+
+
+export interface GPSData {
+  Latitude?:number,
+  Longitude?:number
+}
+
+export async function fetchGPSData(): Promise<GPSData | null> {
+  try {
+    const response = await fetch('/api/gps', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Disable caching for up-to-date data
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data: GPSData = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch GPS data:', error);
+    return null;
+  }
+}

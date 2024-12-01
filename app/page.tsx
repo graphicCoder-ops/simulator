@@ -15,6 +15,7 @@ import {
   SensorData,
   fetchTripData,
   TripsData,
+  fetchGPSData,
 } from '@/lib/api';
 import { FaCar, FaMapMarkerAlt } from 'react-icons/fa';
 import { GiTreasureMap } from 'react-icons/gi';
@@ -23,6 +24,13 @@ import { TbEngine } from 'react-icons/tb';
 
 import { LineChart, Line } from 'recharts';
 
+
+import dynamic from 'next/dynamic';
+
+const GoogleMapComponent = dynamic(
+  () => import('@/components/ui/GoogleMapComponent'),
+  { ssr: false }
+);
 
 // Import Recharts components
 import {
@@ -37,6 +45,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BsFillFuelPumpFill } from "react-icons/bs";
 import { IoIosWarning } from "react-icons/io";
+import AnimatedRouteMap from '@/components/ui/AnimatedRouteMap';
 
 const fieldsToDisplay: { key: keyof SensorData; label: string }[] = [
   { key: 'RPM', label: 'RPM' },
@@ -84,6 +93,18 @@ export default function HomePage() {
   const [selectedField, setSelectedField] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dtcs, setDtcs] = useState<DTC[]>([]);
+
+    // Define start and end locations
+    const [startLocation, setStartLocation] = useState<google.maps.LatLngLiteral>({
+      lat: 43.6532, // Toronto
+      lng: -79.3832,
+    });
+  
+    const [endLocation, setEndLocation] = useState<google.maps.LatLngLiteral>({
+      lat: 43.7315, // Brampton
+      lng: -79.7624,
+    });
+
   const [selectedTab, setSelectedTab] = useState<string>('DTCs');
   const [currentLocation, setCurrentLocation] = useState<{
     lat: number;
@@ -115,17 +136,21 @@ export default function HomePage() {
       }
     }
 
-    async function getDTCData() {
-      const data = await fetchDTCData();
+    async function getGPSData() {
+      const data = await fetchGPSData();
       if (data) {
         // Uncomment and adjust this line if your API returns DTCs
-        // setDtcs(data.DTCs);
+        if(data.Latitude!=currentLocation.lat && data.Longitude!=currentLocation.lng)
+      setCurrentLocation({
+        lat: data.Latitude,
+        lng: data.Longitude
+      });
       } else {
         setError('Failed to load DTC data.');
       }
     }
-
-    getDTCData();
+    getGPSData();
+    //setInterval(getGPSData,500);
     setInterval(getData,1000);
 
     // Sample DTC data
@@ -247,15 +272,10 @@ export default function HomePage() {
       return (
         <div className="p-4">
           <h1 className="text-2xl font-bold mb-4">Google Maps</h1>
-          <iframe
-            title="Google Maps"
-            src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyA1hbmUTv5XBgn9k9-q0JG0L5kGMEl-bdE&q=${currentLocation.lat},${currentLocation.lng}`}
-            width="100%"
-            height="330"
-            style={{ border: 0 }}
-            allowFullScreen={true}
-            loading="lazy"
-          />
+          <AnimatedRouteMap
+          startLocation={startLocation}
+          endLocation={endLocation}
+        />
           <div className="flex items-center mt-4">
             <span className="text-2xl mr-2">
               <FaCar />
