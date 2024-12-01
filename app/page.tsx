@@ -131,27 +131,27 @@ export default function HomePage() {
     // Sample DTC data
     const dtcData: DTC[] = [
       {
-        code: 'P0300',
-        description: 'Engine misfire detected',
-        severity: 'danger',
-      },
-      {
-        code: 'P0420',
-        description: 'Catalyst system efficiency below threshold',
+        code: 'P0131',
+        description: 'Oxygen Sensor Circuit Low Voltage Detected',
         severity: 'normal',
       },
       {
+        code: 'P07A3',
+        description: 'Transmission issue – friction element stuck, potential shifting problems.',
+        severity: 'danger',
+      },
+      {
         code: 'P0171',
-        description: 'System too lean (Bank 1)',
+        description: 'Catalytic converter not working efficiently, higher emissions possible',
+        severity: 'normal',
+      },
+      {
+        code: 'P0420',
+        description: 'Clutch disengagement problem – possible difficulty driving or moving vehicle',
         severity: 'danger',
       },
       {
-        code: 'P0172',
-        description: 'System too rich (Bank 1)',
-        severity: 'danger',
-      },
-      {
-        code: 'P0173',
+        code: 'P2872',
         description: 'Fuel Trim Malfunction (Bank 2)',
         severity: 'danger',
       },
@@ -271,7 +271,7 @@ export default function HomePage() {
             </span>
             
             <span className="ml-4 text-3xl font-semibold">
-              Estimated distance of <span className="text-blue-600">120 km</span>
+              Estimated distance of <span className="text-blue-600">{parseFloat((10*(sensorData["FUEL_LEVEL"])/100 * 73) as any).toFixed()} km</span>
             </span>
           </div>
         </div>
