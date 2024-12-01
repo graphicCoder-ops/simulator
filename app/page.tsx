@@ -96,13 +96,13 @@ export default function HomePage() {
 
     // Define start and end locations
     const [startLocation, setStartLocation] = useState<google.maps.LatLngLiteral>({
-      lat: 43.6532, // Toronto
-      lng: -79.3832,
+      lat: 43.65696647404934, // Toronto
+      lng: -79.74090879453345,
     });
   
     const [endLocation, setEndLocation] = useState<google.maps.LatLngLiteral>({
-      lat: 43.7315, // Brampton
-      lng: -79.7624,
+      lat: 43.59120178222656,// Brampton
+      lng: -79.64701080322266,
     });
 
   const [selectedTab, setSelectedTab] = useState<string>('DTCs');
@@ -149,7 +149,7 @@ export default function HomePage() {
         setError('Failed to load DTC data.');
       }
     }
-    getGPSData();
+    setInterval(getGPSData,500);
     //setInterval(getGPSData,500);
     setInterval(getData,1000);
 
@@ -177,7 +177,6 @@ export default function HomePage() {
       },
     ];
     setDtcs(dtcData);
-    setCurrentLocation({ lat: 43.65647222, lng: -79.73763889 });
 
     async function getTripData() {
       setIsTripsLoading(true);
@@ -272,7 +271,8 @@ export default function HomePage() {
       return (
         <div className="p-4">
           <h1 className="text-2xl font-bold mb-4">Google Maps</h1>
-          <AnimatedRouteMap
+          <GoogleMapComponent
+          currentLocation={currentLocation}
           startLocation={startLocation}
           endLocation={endLocation}
         />
