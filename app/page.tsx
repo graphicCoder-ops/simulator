@@ -150,11 +150,6 @@ export default function HomePage() {
         description: 'Clutch disengagement problem – possible difficulty driving or moving vehicle',
         severity: 'danger',
       },
-      {
-        code: 'P2872',
-        description: 'Fuel Trim Malfunction (Bank 2)',
-        severity: 'danger',
-      },
     ];
     setDtcs(dtcData);
     setCurrentLocation({ lat: 43.65647222, lng: -79.73763889 });
