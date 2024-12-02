@@ -286,7 +286,7 @@ export default function HomePage() {
             </span>
             
             <span className="ml-4 text-3xl font-semibold">
-              Estimated distance of <span className="text-blue-600">{parseFloat((10*(sensorData["FUEL_LEVEL"])/100 * 73) as any).toFixed()} km</span>
+              Estimated distance of <span className="text-blue-600">{parseFloat((5*(sensorData["FUEL_LEVEL"])/100 * 73) as any).toFixed()} km</span>
             </span>
           </div>
         </div>
