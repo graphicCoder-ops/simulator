@@ -101,8 +101,8 @@ export default function HomePage() {
     });
   
     const [endLocation, setEndLocation] = useState<google.maps.LatLngLiteral>({
-      lat: 43.59120178222656,// Brampton
-      lng: -79.64701080322266,
+      lat: 43.72375,// Brampton
+      lng: -79.697722,
     });
 
   const [selectedTab, setSelectedTab] = useState<string>('DTCs');
