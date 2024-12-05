@@ -238,7 +238,7 @@ export default function HomePage() {
           <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-[600px]">
             <button
               onClick={closeChart}
-              className="absolute top-2 right-2 text-gray-500 text-black text-3xl"
+              className="absolute top-2 right-2 text-black text-4xl"
             >
               ✖
             </button>
