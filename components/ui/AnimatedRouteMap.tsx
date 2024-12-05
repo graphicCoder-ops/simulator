@@ -89,7 +89,7 @@ const AnimatedRouteMap: React.FC<Props> = ({ startLocation, endLocation }) => {
       const interval = setInterval(() => {
         setMarkerPosition(animationPath[animationIndex]);
         setAnimationIndex((prevIndex) => prevIndex + 1);
-      }, 1000); // Adjust the interval as needed
+      }, 300); // Adjust the interval as needed
 
       return () => clearInterval(interval);
     }
