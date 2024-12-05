@@ -88,7 +88,7 @@ const fieldRanges: Record<string, [number, number]> = {
 };
 
 export default function HomePage() {
-  const [sensorData, setSensorData] = useState<SensorData | null>(null);
+  const [sensorData, setSensorData] = useState<SensorData | null>({FUEL_LEVEL:100});
   const [sensorHistory, setSensorHistory] = useState<Record<string, Array<{ time: string; value: number }>>>({});
   const [selectedField, setSelectedField] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
